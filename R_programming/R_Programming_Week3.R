@@ -1,4 +1,4 @@
-# Programming assignment - Week 3- R Programming 
+# Programming assignment - Week 3 - R Programming 
 # Use the given examples and the function solve() -instead of mean()- to invert the given matrix
 
 
