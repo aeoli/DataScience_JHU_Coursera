@@ -31,6 +31,12 @@ data <- read.table(file = "./filepath",
                    quote = "", # to specify whether there are any quoted values ´
                    nrows = 100, # how many rows to read
                    skip = 2) # number of lines to skip at the beginning
+file() # open a connection to a txt file
+url() # open a connection to a url 
+gzfile() # open a connection to a .gz file
+bzfile() # open a connection to a .bz2 file
+?connections # to know more + REMEMBER to close the connections!
+# for other extensions/apps the syntax is usually de same 'read.app' (e.g. read.spss())
 
 
 # 3. Read Excel files
@@ -70,6 +76,63 @@ names(JSONdata)
 
 myjson <- toJSON(iris, pretty = TRUE) # exports data in JSON format
 cat(myjson) # example
+
+
+# 6. Reading from MySQL
+library(RMySQL)
+server <- dbConnect(MySQL(), user = "username", host = "MySQL_server_URL")
+databases <- dbGetQuery(server, "show databases;") # check all available databases
+database <- dbConnect(MySQL(), db = "database_name", # select the db that we will need
+                      user = "username", host = "MySQL_server_URL")
+allTables <- dbListTables(database)
+column_names <- dbListFields(database,"table_name") # to get the attributes/column names
+table_data <- dbReadTable(database, "table_name") # to get the whole table
+query_data <- dbGetQuery(database, "SELECT COUNT(*) FROM table_name;") # to pass a query on a table
+dbDisconnect(server) # once finished --> don't forget this!
+
+
+# 7. Reading HDF5 (Hierarchical Data Format 5) - for large datasets
+# BiocManager::install("rhdf5")
+library(rhdf5)
+
+# create file and add info
+create_file <- h5createFile("example.h5")
+create_file <- h5createGroup("example.h5", "group1")
+create_file <- h5createGroup("example.h5", "group1/subgroup1")
+A <- matrix(1:10, nr = 5, nc = 2) # or a dataframe or anything else
+h5write(A, "example.h5", "group1/subgroup1/A")
+
+h5ls("example.h5") # to check the whole file
+h5read("example.h5", "group1/subgroup1/A") # to read/extract a specific data element
+
+
+# 8. Reading data from the Web / Web scraping
+url <- url("http://any_URL.com/whatever")
+
+# first option
+html_code <- readLines(url) # or htmlTreeParse(url, useInternal = T), as seen above
+close(url) # close connection
+html_code # visualize
+xpathSApply(etc, etc) # see above
+
+# second option
+library(httr)
+html_data <- GET(url)
+content <- content(html_data, as = "text") # extracts the content as one big text string
+parsed_html <- htmlParse(content, asText = TRUE) # parses it 
+xpathSApply(etc, etc) # see above
+
+# in case of required authentication
+GET("http://blabla/auth/user/password", authenticate("user","pwd"))
+
+
+# 9. Reading data from APIs
+library(httr)
+my_app <- oauth_app("twitter", key = "the_key", secret = "the_secret")
+sig <- sign_oauth1.0(my_app, token = "the_token", token_secret = "the_token_secret")
+html_data <- GET("url.bla.bla.bla.json", sig)
+json_raw <- content(html_data)
+data <- jsonlite::fromJSON(json_raw)
 
 
 
