@@ -1,4 +1,4 @@
-###### ____ Getting and Cleaning Data - Week 1 ____ ######
+###### ____ Getting and Cleaning Data - Week 1 & 2 ____ ######
 
 ## USEFUL FUNCTIONS
 getwd()
@@ -8,7 +8,13 @@ if (!file.exists("path folder or file")) {
   dir.create("path folder/name")
 }
 
-# download file from internet
+# the data.table package
+library(data.table) # written in C so it is much faster than data.frame, also in subsetting/grouping/etc.
+df <- data.table(x = rnorm(9), y = rep(c("a","b","c"), each = 3), z = rnorm(9))
+# however the syntax is quite different, it requires some study
+
+
+# 1. Download file from internet
 fileURL <- "https://something.com"
 file <- download.file(fileURL, 
                       destfile = "./DestFolder", # or destfile = "./Folder/Filename.csv" to 'save as'
@@ -17,7 +23,7 @@ list.files("./DestinationFolder") # to check if everything went fine
 dateDownloaded <- date() # to store the download date, just in case
 
 
-# reading local files
+# 2. Read local files
 data <- read.table(file = "./filepath",
                    sep = ",", # or read.csv() or read.csv2() if the file is CSV
                    header = TRUE,
@@ -27,7 +33,7 @@ data <- read.table(file = "./filepath",
                    skip = 2) # number of lines to skip at the beginning
 
 
-# reading Excel files
+# 3. Read Excel files
 library(xlsx)
 data <- read.xlsx("./filepath",  # read.xlsx2() is much faster but might be unstable in some circumstances
                   sheetIndex = 1, # which Excel sheet is the data on
@@ -37,7 +43,7 @@ write.xlsx() # to save as Excel file
 library(XLConnect) # another nice package to work with Excel files
 
 
-# reading XML files (eXtensible Markup Languange), very used in internet applications
+# 4. Read XML files (eXtensible Markup Languange), very used in internet applications
 library(XML)
 fileURL <- "https:www.tuamadre.com/beyonce/queen.xml"
 doc <- xmlTreeParse(fileURL, useInternal = T) # download the xml file as a R structured object 
@@ -54,10 +60,10 @@ xmlSApply(rootNode,xmlValue) # programmatically extracts the values of the file 
 # However, it does it by collapsing all the values together, which makes it difficult to separate them.
 # Learning some XPath programming language might be beneficial, when working often with XML files.
 # This language can be passed in xmlSApply() to improve the extraction process. For example,
-# xmlSApply(rootNode,"//name",xmlValue) extracts all values of the node 'name' as a character vector, etc.
+xpathSApply(rootNode,"//name",xmlValue) # extracts all values of the node 'name' as a chr vector, etc.
 
 
-# reading JSON files (JavaScript Object Notation) from an API
+# 5. Read JSON files (JavaScript Object Notation)
 library(jsonlite) # amazing package
 JSONdata <- fromJSON("https://api.github.com/users/aeoli/repos")
 names(JSONdata)
@@ -66,10 +72,6 @@ myjson <- toJSON(iris, pretty = TRUE) # exports data in JSON format
 cat(myjson) # example
 
 
-# the data.table package
-library(data.table) # written in C so it is much faster than data.frame, also in subsetting/grouping/etc.
-df <- data.table(x = rnorm(9), y = rep(c("a","b","c"), each = 3), z = rnorm(9))
-# however the syntax is quite different, it requires some study
 
 
 
