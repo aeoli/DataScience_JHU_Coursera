@@ -13,6 +13,7 @@ dim(outcome)
 str(outcome)
 summary(outcome)
 names(outcome) 
+table(outcome$state)
 
 
 ## PROCESS DATA
