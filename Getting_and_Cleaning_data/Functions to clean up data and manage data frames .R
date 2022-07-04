@@ -73,22 +73,28 @@ filter(iris, Sepal.Length > 7 & Sepal.Width < 3) # WHERE statement
 arrange(iris, Sepal.Length) # ORDER BY x
 arrange(iris, desc(Sepal.Length)) # ORDER BY x DESC
 rename(iris, qualcosa = test, qualcosaltro = test2) # SELECT x AS new_name
-mutate(iris, test = Petal.Width - mean(Petal.Width)) # create new variable. SELECT FORMULA(x) AS new_column
+mutate(iris, test = Petal.Width - mean(Petal.Width)) # create new var. SELECT FORMULA(x) AS new_column
 gr_by <- group_by(iris, Species) # prepare a GROUP BY x
 summarise(gr_by, mean_SL = mean(Sepal.Length), max_SW = max(Sepal.Width)) # visualize the GROUP BY
 
 # Pipe operator: the most interesting asset of dplyr
 iris %>% group_by(Species) %>% summarise(mean_SL = mean(Sepal.Length), max_SW = max(Sepal.Width))
 
-# Join
-merge(table_x, table_y, by = "id", all.x = TRUE) # if by is not specified merge will join all columns with the same
-# name. We use by to specify the merging columns. Otherwise by.y and by.x to pick the individual column 
-# names from each table. LEFT JOIN = all.x, RIGHT JOIN = all.y, INNER JOIN = all. Max 2 tables.
+## Join
+merge(table_x, table_y, by = "id", all.x = TRUE) # if by is not specified merge will join all columns 
+                # with the same name. We use by to specify the merging columns. Otherwise by.y and by.x  
+                # to pick the individual column names from each table. LEFT JOIN = all.x, RIGHT JOIN = 
+                # all.y, INNER JOIN = all. Max 2 tables.
 
-left_join(table_x, table_y, table_z) # dplyr function. Also for multiple joins. Automatically joins by 
-# col with identical name. Otherwise it can be specifiec by = c("X_Col1" = "Y_Col1", etc.)
+left_join(table_x, table_y, table_z) # dplyr function. Also for multiple joins. Automatically joins by
+                # col with same name. Otherwise it can be specified by = c("X_Col1" = "Y_Col1", etc.)
 
-
+## tidyr package: to tidy data
+pivot_longer() # collapse many columns into 1 column
+pivot_wider() # separate 1 column into many columns
+separate(df, column_to_separate, into = c("new_col_1", "new_col_2")) # separates a character column into 
+                # multiple cols with regular expressions or numeric locations. The 'sep =' arg specifies
+                # the separator (otherwise the function will automatically try to figure it out).
 
 
 
