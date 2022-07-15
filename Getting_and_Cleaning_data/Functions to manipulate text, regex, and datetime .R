@@ -32,7 +32,7 @@ stringr::str_trim("tua     ") # removes whitespaces at the beginning/end/both of
 # '?' means optional (George W? Bush will look for the name with and without the W)
 # '*' means any number (also 0) of the preceding character(s) ('.*' means 'anything')
 # '+' means 'at least 1 of the preceding ch' ([0-9]+ means 'any number')
-# '{min,max}' defines the min and max num of occurences ('B{3,4}' will look for BBB and BBBB)
+# '{min,max}' defines the min and max num of occurrences ('B{3,4}' will look for BBB and BBBB)
 
 
 
