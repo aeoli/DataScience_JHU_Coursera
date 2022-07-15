@@ -7,6 +7,7 @@ setwd("Getting_and_Cleaning_data/Final project/")
 download.file("https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip", 
               "./Final_project.zip")
 unzip("./Final_project.zip", exdir = ".")
+file.remove("./Final_project.zip")
 list.files(".")
 
 features <- read.table("./UCI HAR Dataset/features.txt", col.names = c("n","functions"))
@@ -58,3 +59,5 @@ final <- subset %>% group_by(Subject, Activity)
 final <- summarise_all(final, mean)
 
 write.table(final, "./grouped_tidy_dataset.txt", row.name=FALSE)
+
+file.remove(list.files("Getting_and_Cleaning_data/Final project/UCI HAR Dataset/", full.names = T, recursive = T), recursive = T)
