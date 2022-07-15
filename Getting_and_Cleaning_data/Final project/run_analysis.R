@@ -60,4 +60,4 @@ final <- summarise_all(final, mean)
 
 write.table(final, "./grouped_tidy_dataset.txt", row.name=FALSE)
 
-file.remove(list.files("Getting_and_Cleaning_data/Final project/UCI HAR Dataset/", full.names = T, recursive = T), recursive = T)
+file.remove(list.files("./UCI HAR Dataset/", full.names = T, recursive = T), recursive = T)
