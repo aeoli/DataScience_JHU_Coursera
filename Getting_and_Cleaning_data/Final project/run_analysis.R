@@ -7,8 +7,8 @@ setwd("Getting_and_Cleaning_data/Final project/")
 download.file("https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip", 
               "./Final_project.zip")
 unzip("./Final_project.zip", exdir = ".")
-file.remove("./Final_project.zip")
-list.files(".")
+file.remove("./Final_project.zip") # delete heavy zip file
+list.files(".") # check file names
 
 features <- read.table("./UCI HAR Dataset/features.txt", col.names = c("n","functions"))
 activities <- read.table("./UCI HAR Dataset/activity_labels.txt", col.names = c("code", "activity"))
