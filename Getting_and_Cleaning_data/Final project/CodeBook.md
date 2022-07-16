@@ -4,10 +4,6 @@ output: html_document
 date: '2022-07-14'
 ---
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-```
-
 ## Assignment - Getting and Cleaning Data Course Project
   
 All processing steps are in the run_analysis.R script and are explained here in details.  
