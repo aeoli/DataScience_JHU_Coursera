@@ -58,6 +58,6 @@ names(subset)<-gsub("_$", "", names(subset))
 final <- subset %>% group_by(Subject, Activity) 
 final <- summarise_all(final, mean)
 
-write.table(final, "./grouped_tidy_dataset.txt", row.name=FALSE)
+write.table(final, "./tidy_dataset.txt", row.name=FALSE)
 
 file.remove(list.files("./UCI HAR Dataset/", full.names = T, recursive = T), recursive = T)
