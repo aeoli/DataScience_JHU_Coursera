@@ -1,0 +1,96 @@
+---
+title: "Assignment: Course Project 1"
+author: "Andrea Eoli"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, fig.path = "./figures/")
+
+library(dplyr)
+library(lubridate)
+library(tidyverse)
+library(ggplot2)
+
+```
+
+## Loading and preprocessing the data
+```{r load}
+df <- tibble(read.csv(unzip("activity.zip")))
+str(df)
+df$date <- as.Date.character(df$date)
+```
+
+
+## What is mean total number of steps taken per day?
+```{r q1}
+q1 <- df %>% drop_na() %>% group_by(date) %>% summarize(tot_steps = sum(steps))
+
+ggplot(q1, aes(x=date, y=tot_steps)) + 
+  geom_bar(stat = "identity", fill = "#69b3a2") + ggtitle("Total steps by day")
+
+mean <- mean(q1$tot_steps)
+median <- median(q1$tot_steps)
+
+```
+
+The mean of the total steps taken per day is `r as.integer(mean)`, while the median is `r as.integer(median)`.
+
+
+## What is the average daily activity pattern?
+```{r q2}
+q2 <- df %>% drop_na() %>% group_by(interval) %>% summarize(avg_steps = mean(steps))
+
+plot(q2, type = "l", main = "Average steps by 5-min interval")
+
+max <- as.numeric(q2[q2$avg_steps == max(q2$avg_steps),"interval"])
+```
+
+The 5-minute interval, on average across all the days in the dataset, that contains the maximum number of steps is `r max`.
+
+
+## Imputing missing values
+```{r q3}
+# Count NAs
+NAs <- sum(is.na(df))
+
+# Impute NAs with AVG(interval)
+q3 <- df
+q3$steps <- ave(q3$steps, q3$interval, FUN=function(x) 
+  ifelse(is.na(x), mean(x, na.rm = TRUE), x))
+
+# Plot
+q3_grouped <- q3 %>% group_by(date) %>% summarize(tot_steps = sum(steps)) 
+
+q3_grouped %>% 
+  ggplot(aes(x=date, y=tot_steps)) + 
+  geom_bar(stat = "identity", fill = "#69b3a2") + ggtitle("Total steps by day")
+
+mean2 <- mean(q3_grouped$tot_steps)
+median2 <- median(q3_grouped$tot_steps)
+
+if (mean == mean2 & median == median2) {q3_comp <- "both are identical to the previously calculated values"
+} else{q3_comp <- "there are some differences compared to the previous values"}
+
+```
+
+The total number of missing values in the dataset is `r NAs`. The new mean is `r as.integer(mean2)` and the new median is `r as.integer(median2)`, `r q3_comp`. When comparing the imputed dataset with the previous one, the main difference is that there are `r nrow(q3_grouped) - nrow(q1)` new observations/rows.
+
+## Are there differences in activity patterns between weekdays and weekends?
+```{r q4}
+q4 <- q3
+
+q4$weekday <- weekdays(q4$date)
+q4$type <- factor(ifelse(q4$weekday %in% c("Saturday","Sunday"), "weekend","weekday"))
+
+
+q4_avg <- q4 %>% group_by(type,interval) %>% summarize(avg_steps = mean(steps))
+
+ggplot(data = q4_avg, aes(interval, avg_steps)) +
+  geom_line(color = "steelblue", size = 1) +
+  labs(title = "Average number of steps taken by 5-min interval",
+       y = "Average steps", x = "Intervals") + 
+  facet_wrap(~ type)
+
+```
