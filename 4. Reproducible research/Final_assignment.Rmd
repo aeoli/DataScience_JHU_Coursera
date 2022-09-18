@@ -1,0 +1,135 @@
+---
+title: "Weather damage analysis (2002-2011)"
+author: "Andrea"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Synopsis
+
+In this analysis we are briefly exploring the damages caused by harmful weather events between 2002 and 2011. 
+When looking at population health, we can see that tornadoes are by far the most dangerous events, with a total of 14,700 people that have either been injured or killed by such event. 
+Excessive heat is the second cause of death. 
+However, when looking at the average number of people harmed by each event, we notice that actually hurricanes/typhoons are the most dangerous events, with an average of 15 people hurt with each time, followed by tsunamis (8).
+In comparison, the average number of people hurt by each tornado is 1, which occupies the 16th place in the chart.
+When looking at damage caused by such events on crops and properties, floods are the most expensive events, with an accumulated total damage of 136 billion USD between 2002 and 2011, followed by hurricanes (71 billion USD).
+Property damage is the biggest contributor in total damage: 133 billion USD (`r round(133387.65 / 136979 * 100)`% of total) for floods and 69 billion USD (`r round(69305.84 / 71913 * 100)`% of total) for hurricanes.
+For crops, the two most harmful events are droughts and floods.
+
+
+
+
+## Data Processing
+
+```{r processing}
+library(data.table)
+library(dplyr)
+library(ggplot2)
+
+# 1. Download file if it's not in the working directory
+if(!file.exists("./StormData.csv.bz2")){
+   download.file("https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2FStormData.csv.bz2", 
+              destfile = "./StormData.csv.bz2", method = "curl") 
+}
+
+# 2. Read file
+df <- fread("./StormData.csv.bz2")
+head(df)
+str(df)
+
+# 3. Data processing
+df$BGN_DATE <- as.Date.character(df$BGN_DATE, "%m/%d/%Y")
+
+main_df <- df[year(df$BGN_DATE) > (max(year(df$BGN_DATE)) - 10),
+              c("BGN_DATE","COUNTYNAME","STATE","EVTYPE","FATALITIES",
+                "INJURIES","PROPDMG","PROPDMGEXP","CROPDMG","CROPDMGEXP")] 
+
+main_df$crop_damage <- sapply(1:nrow(main_df),function(x){
+  # DMGEXP: “K” thousands, “M” millions, “B” billions
+  crop_dmg <- main_df$CROPDMG[x]
+  crop_exp <- main_df$CROPDMGEXP[x]
+  
+  if(crop_exp == "K"){cxp = 1e+03} 
+  else if(crop_exp == "M"){cxp = 1e+06} 
+  else if(crop_exp == "B"){cxp = 1e+09} 
+  else{cxp = 1}
+  
+  tot_crop_dmg <- crop_dmg * cxp
+  return(tot_crop_dmg)
+})
+
+main_df$prop_damage <- sapply(1:nrow(main_df),function(x){
+  # DMGEXP: “K” thousands, “M” millions, “B” billions
+  prop_dmg <- main_df$PROPDMG[x]
+  prop_exp <- main_df$PROPDMGEXP[x]
+  
+  if(prop_exp == "K"){pxp = 1e+03} 
+  else if(prop_exp == "M"){pxp = 1e+06} 
+  else if(prop_exp == "B"){pxp = 1e+09} 
+  else{pxp = 1}
+  
+  tot_prop_dmg <- prop_dmg * pxp
+  return(tot_prop_dmg)
+})
+
+main_df$total_damage <- main_df$crop_damage + main_df$prop_damage
+
+main_df$tot_harmed_people <- main_df$FATALITIES + main_df$INJURIES
+
+# 4. Remove original df to free up some memory
+rm(df)
+```
+
+
+
+## Results
+
+# Which types of events are most harmful to population health?
+```{r q1}
+q1 <- main_df %>% group_by(EVTYPE) %>% summarise(tot_ppl = sum(tot_harmed_people), 
+                                                 avg_ppl = mean(tot_harmed_people),
+                                                 injured = sum(INJURIES),
+                                                 fatal = sum(FATALITIES))
+
+head(q1[order(q1$tot_ppl, decreasing = T),],10) %>% 
+  ggplot(aes(y = reorder(EVTYPE,tot_ppl), x=tot_ppl, fill = "tot_ppl")) + 
+  geom_bar(stat = "identity") +
+  xlab("Harmed people") +
+  ylab("Event type") +
+  ggtitle("Top 10 most harmful events for population health") +
+  theme(legend.position = "none")
+
+head(q1[order(q1$avg_ppl, decreasing = T),c(1,3)],16)
+
+
+```
+
+
+# Which types of events have the greatest economic consequences?
+```{r q2}
+q2 <- main_df %>% group_by(EVTYPE) %>% summarise(tot_dmg = as.integer(sum(total_damage)/1000000),
+                                                 avg_dmg = mean(total_damage),
+                                                 crop = sum(crop_damage)/1000000,
+                                                 prop = sum(prop_damage)/1000000)
+
+head(q2[order(q2$tot_dmg, decreasing = T),],10) %>% 
+  ggplot(aes(y = reorder(EVTYPE,tot_dmg), x=tot_dmg, fill = "tot_dmg")) + 
+  geom_bar(stat = "identity") +
+  xlab("Economic damage (million USD)") +
+  ylab("Event type") +
+  ggtitle("Top 10 most harmful events for the economy") +
+  theme(legend.position = "none") +
+  scale_x_continuous(labels = scales::comma) 
+
+print("Total damage:")
+head(q2[order(q2$tot_dmg, decreasing = T),],3)
+
+print("Crop damage:")
+head(q2[order(q2$crop, decreasing = T),],3)
+
+
+```
