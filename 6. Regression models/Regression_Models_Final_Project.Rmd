@@ -1,0 +1,100 @@
+---
+title: "Regression Models Course Project"
+author: "Andrea Eoli [19-01-2023]"
+#date: "`r Sys.Date()`"
+output: 
+  pdf_document
+---
+\fontsize{10}{12}
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, out.width='90%')
+library(ggplot2)
+library(datasets)
+
+```
+
+## Executive summary
+
+We try to have a look at the difference in gasoline compumption between cars with automatic transmission and those with a manual one. Although automatic cars are more efficient (higher number of miles per gallon, or MPG), the type of transmission is not the most influetial factors that affect the MPG. In fact, when fitting a model that can explain MPG efficiency, the number of cylinders, the horsepower, and the car weight are the only statistically significant covariates and are negatively correlated with MPG.
+
+## Analysis 
+
+```{r data_check_and_cleaning}
+data(mtcars)
+
+# correlation data for later
+carscor <- cor(mtcars$mpg,mtcars[,-1])
+
+# Factorize discrete variables
+mtcars$mpg <- as.numeric(mtcars$mpg)
+mtcars$cyl <- factor(mtcars$cyl)
+mtcars$vs <- factor(mtcars$vs)
+mtcars$am <- factor(mtcars$am)
+mtcars$gear <- factor(mtcars$gear)
+mtcars$carb <- factor(mtcars$carb)
+```
+
+### Q1: “Is an automatic or manual transmission better for MPG”
+
+Fig.1 shows that automatic cars have a higher mean MPG. This is confirmed by the t test (p-value = 0.0014). We can therefore conclude that automatic cars are better for MPG.
+
+```{r t_test}
+t.test(mtcars$mpg~mtcars$am)$p.val
+```
+
+
+### Q2: "Quantify the MPG difference between automatic and manual transmissions"  
+
+```{r auto_vs_manual}
+fit_am <- lm(mpg ~ am, data = mtcars)
+round(summary(fit_am)$r.squared*100, digits=2)
+```
+
+First, we fit a linear model between "mpg" and the transmission type. However, as only the 36% of MPG variation is explained by "am", we need to include more covariates. Let's investigate their correlations.
+
+```{r cor}
+carscor
+```
+
+"Cyl", "disp", "hp", and "wt" are negatively correlated with MPG. This is also visible in Fig.2. We then use step() to test all covariates and find the best model.
+
+```{r test_covars}
+fit_all <- lm(mpg ~ ., data = mtcars)
+step_fit <- step(fit_all, direction = "both", trace = 0)
+
+shapiro.test(summary(step_fit)$residuals)$p.val
+
+summary(step_fit)
+```
+
+The function automatically keeps the model with the lowest AIC ("mpg ~ cyl + hp + wt + am", AIC=61.65), which corresponds to the best fit. The model explains the 86.6% of MPG variation. Residuals are normally distributed (p-value = 0.4479) and model assumptions are met (Fig.5). 6 cylinders (-3.03), horsepower(-0.03), and weight (-2.49) are the variables with the biggest impact on MPG.
+Although we were expecting automatic cars to be more efficient, manual transmission has a positive coefficient (1.8). However, it is not significant (Pr = 0.21) and we cannot therefore conclude that, according to this model, manual cars are more efficient than automatic ones. This contraddiction can be seen in Fig.2-4: automatic cars are correlated with heavier vehicles, higher cylinder number, and higher horsepower, which decrease their MPG.
+
+
+## Appendix
+
+```{r fig1, echo=FALSE}
+boxplot(mtcars$mpg ~ mtcars$am,
+        names = c("Automatic", "Manual"), ylab="Miles Per Gallon", main = "Fig.1 - MPG by transmission type")
+```
+```{r fig2, echo=FALSE}
+pairs(mtcars[,c("mpg","cyl","disp","hp","wt","am")], panel = panel.smooth, main = "Fig.2 - Correlations")
+```
+```{r fig3, echo=FALSE}
+ggplot(mtcars, aes(x=am, y=mpg, fill=cyl)) + 
+  geom_boxplot() + 
+  ggtitle("Fig.3 - MPG by transmission type and cylinders") + 
+  xlab("Transmission type\n(0 = automatic, 1 = manual)") + ylab("MPG")
+```
+```{r fig4, echo=FALSE}
+ggplot(mtcars, aes(x=wt, y=mpg, fill=cyl)) + 
+    geom_boxplot() + ggtitle("Fig.4 - MPG by car weight and cylinders") +
+    xlab("Car weight") + ylab("MPG")
+```
+```{r fig5, echo=FALSE}
+par(mfrow = c(2,2))
+plot(step_fit)
+mtext("Fig.5 - Residuals plots\n", side = 3, line = -2, outer = TRUE)
+
+```
