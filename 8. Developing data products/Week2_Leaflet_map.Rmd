@@ -1,0 +1,30 @@
+---
+title: "A small pizza map of Berlin"
+author: "Andrea Eoli"
+date: ""
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+library(leaflet)
+```
+
+## 27 March 2023
+
+```{r map}
+my_map <- leaflet() %>% 
+  addTiles() %>% 
+  addMarkers(lat = c(52.491169,52.493599,52.494671,52.552150), 
+             lng = c(13.425860,13.427280,13.414340,13.363830),
+             popup = c("<a href='https://www.gazzopizza.com/'>Most overrated pizzeria in Berlin</a>",
+                           "<a href='https://www.ammazza.de/'>An example of a much better one</a>",
+                           "<a href='https://www.terrarestaurant.de/?lang=en'>Another example of a much better one</a>",
+                           "<a href='https://www.instagram.com/straneroberlin/?hl=en'>One of my favourites</a>"),
+             icon = makeIcon("/Users/andreaeoli/R_Projects/DataScience_JHU_Coursera/8. Developing data products/pizza_icon.png", 
+                             iconWidth = 48, iconHeight = 64))
+
+my_map
+```
+
