@@ -1,0 +1,22 @@
+---
+title: "Week 3 assignment"
+author: "Andrea Eoli"
+date: "27th March, 2023 \n (use arrows to change slide)"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(plotly)
+```
+
+
+## Mtcars Scatter Plot
+```{r plotly, message=FALSE, warning=FALSE}
+data(mtcars)
+plot_ly(data = mtcars, x = ~wt, y = ~mpg, mode = "markers", color = ~cyl) 
+```
+
+## Thanks!
+
+
