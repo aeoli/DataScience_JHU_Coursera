@@ -9,24 +9,20 @@ output: ioslides_presentation
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
-## About the Course Project
+## Instructions
 
-This is a deliverable for the course Developing Data Products as part of the Coursera Data Science Specialization.
-
-Instructions:
-
-1. Write a shiny application with associated supporting documentation. The documentation should be thought of as whatever a user will need to get started using your application.
-2. Deploy the application on Rstudio's shiny server
-3. Share the application link by pasting it into the provided text box
-4. Share your server.R and ui.R code on github
+1. Write a shiny app with documentation.
+2. Deploy it on Rstudio's shiny server
+3. Share the app link
+4. Share the server.R and ui.R scripts on github
 
 ## How to use the application
 
-Using the data provided by Galton Families dataset, we fit a linear model to predict a child's height based on the gender and parent's average height.
+Start to write a short sentence and the app will predict which words are most likely to follow.
 
-The application is running on (https://r2po.shinyapps.io/course_project_shiny_appreproducible_pitch/)
+The application is running here: https://eolia.shinyapps.io/Week4_AE/
 
-ui.R, and Server.R Code in my github repository (https://github.com/XavierFontane/Course-Project-Shiny-Application-and-Reproducible-Pitch)
+ui.R, and Server.R Code in my github repository 
 
 ## Galton Families Dataset
 
