@@ -1,5 +1,5 @@
 ---
-title: 'Final Project: Build a Shiny app'
+title: 'Final Project: Shiny app'
 author: "Andrea Eoli"
 date: "06 May 2023"
 output: ioslides_presentation
@@ -16,29 +16,29 @@ knitr::opts_chunk$set(echo = FALSE)
 3. Share the app link
 4. Share the server.R and ui.R scripts on github
 
+
+**Course**: "Developing data products"
+
+**Specialization**: "Data Science"
+
 ## How to use the application
 
-Start to write a short sentence and the app will predict which words are most likely to follow.
+The app is a word predictor. Simply start to write a short sentence and the app will predict which words are most likely to follow.
 
-The application is running here: https://eolia.shinyapps.io/Week4_AE/
+[Click here to access the app](https://eolia.shinyapps.io/Week4_AE/)
 
-ui.R, and Server.R Code in my github repository 
 
-## Galton Families Dataset
+## Data sources
 
-The data used in the app comes from the GaltonFamilies dataset. 
+The data comes from 2 sources:  
+1. *Ngrams* is a dataframe with words ('words') that follow an input string ('ngrams') and their frequency of appearance ('freq')
+2. *Contractions* contains the info to convert contracted words into single ones (e.g., "it's" to "it is")
 
 ```{r summary}
-library(HistData)
-data(GaltonFamilies)
-summary(GaltonFamilies)
+load(file="ngrams")
+subset <- which(stringr::str_count(ngrams$ngrams) > 8)
+head(ngrams[subset,])
 ```
 
-## Plot
-In the scatterplot below are represented the data used for the prediction model
-```{r plot}
-library(HistData)
-data(GaltonFamilies)
-plot(jitter(GaltonFamilies$childHeight) ~ GaltonFamilies$midparentHeight,xlab="Average Height of the Parents (in inches)",ylab="Height of the Child (in inches)",main="Scatterplot of Galton Family Data",pch=19,frame.plot=FALSE,col=ifelse(GaltonFamilies$gender=="female", "pink", "light blue"))
-legend(65,80,pch=c(19,19),col=c("pink","light blue"),c("female", "male"),bty="o",cex=.8)
-```
+## Code and GitHub
+The ui.R and Server.R scripts are available [in my github repository](https://github.com/aeoli/DataScience_JHU_Coursera/tree/master/8.%20Developing%20data%20products/Week4_AE)
