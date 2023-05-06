@@ -1,0 +1,14 @@
+name: Week4_AE
+title: Week4_AE
+username:
+account: eolia
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 9044940
+bundleId: 7183017
+url: https://eolia.shinyapps.io/Week4_AE/
+when: 1683401737.0134
+lastSyncTime: 1683401737.01342
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: Pitch_presentation.html|Pitch_presentation.Rmd
