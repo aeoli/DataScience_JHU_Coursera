@@ -1,0 +1,93 @@
+---
+title: "Exploratory Analysis - Milestone Data Science"
+author: "Andrea Eoli"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(data.table)
+library(dplyr)
+library(ggplot2)
+```
+
+## Load files
+
+We start by loading and merging the files:
+
+```{r load, message=FALSE, warning=FALSE, include=FALSE}
+# 1. Load text corpi
+eng_twitter <- readLines("../data/en_US/en_US.twitter.txt")
+eng_blogs <- readLines("../data/en_US/en_US.blogs.txt")
+eng_news <- readLines("../data/en_US/en_US.news.txt")
+eng_all <- c(eng_twitter,eng_blogs,eng_news)
+```
+
+```{r basic_check, message=FALSE, warning=FALSE, include=FALSE}
+length(eng_twitter)
+length(eng_blogs)
+length(eng_news)
+
+length(eng_all)
+```
+
+```{r longest, message=FALSE, warning=FALSE, include=FALSE}
+chars <- sapply(eng_all, nchar) 
+max(chars) # 40k but where?
+max(sapply(eng_blogs, nchar)) # here
+longest <- eng_blogs[max(sapply(eng_blogs, nchar))]
+```
+
+The biggest file is the the Twitter one (2.3M rows) and in total, after merging the three sources, we have almost 4.3M sentences. The longest sentence, which belongs to the "blogs" data set, is the following: "`r longest`"
+
+## Word frequencies
+
+The following plot shows the frequency of the most common words:
+```{r common, warning=F, message=F}
+# Q1. What are the distributions of word frequencies? 
+subset <- eng_all[sample.int(length(eng_all),400000)] # pick 400k (10%) random sentences
+only_words <- gsub("[^[:alnum:]]", " ", subset)
+words <- unlist(strsplit(only_words, " "))
+words <- words[words != ""] #remove empty rows
+freq_table <- sort(table(words), decreasing = T)
+
+df <- as.data.frame(freq_table[1:20]) 
+df$words <- factor(df$words)
+ggplot(df, aes(x = Freq, y = reorder(words, -Freq))) +
+  geom_bar(stat = "identity", fill = "steelblue") +
+  labs(x = "Count", y = "Words") +
+  ggtitle("Most common words") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  scale_x_continuous(labels = scales::comma)
+  scale_y_reverse() 
+
+```
+
+When checking n-grams (groups of words that appear together), we can see the following frequencies for the top 25 3-grams: 
+
+```{r n-grams}
+subset <- eng_all[sample.int(length(eng_all),4000)] # pick 4k (0.1%) random sentences
+collapse <- paste(subset, collapse = " ") # Convert the sentences to a single character vector
+# bigrams <- tau::textcnt(collapse, method = "string", n = 2) # Get the 2-grams
+trigrams <- tau::textcnt(collapse, method = "string", n = 3) # Get the 3-grams
+# tetragrams <- tau::textcnt(collapse, method = "string", n = 4) # Get the 3-grams
+
+sort(trigrams, decreasing = T)[1:25]
+```  
+
+How many unique words do we need in a frequency sorted dictionary to cover 50% and 90% of all word instances? 
+
+```{r coverage}
+total_words <- length(words)
+frequencies <- data.frame(freq_table)
+cumulative_freq <- cumsum(frequencies$Freq)
+half_index <- min(which(cumulative_freq >= total_words/2)) # index of the first entry that covers at least 50% of the words
+cat(sprintf("%g %% entries needed to cover 50%% of the words.\n", round(half_index/nrow(frequencies)*100,2)))
+
+ninty_index <- min(which(cumulative_freq >= total_words*0.9)) # index of the first entry that covers at least 90% of the words
+cat(sprintf("%g %% entries needed to cover 90%% of the words.\n", round(ninty_index/nrow(frequencies)*100,2)))
+```
+
+
