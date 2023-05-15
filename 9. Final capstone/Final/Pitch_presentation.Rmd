@@ -41,4 +41,4 @@ head(ngrams[subset,])
 ```
 
 ## Code and GitHub
-The ui.R and Server.R scripts are available [in my github repository](https://github.com/aeoli/DataScience_JHU_Coursera/tree/master/8.%20Developing%20data%20products/Week4_AE)
+The ui.R and Server.R scripts are available [in my github repository](https://github.com/aeoli/DataScience_JHU_Coursera/tree/master/9.%20Final%20capstone/Final)

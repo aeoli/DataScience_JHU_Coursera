@@ -1,0 +1,11 @@
+name: Publish Document
+title:
+username:
+account: rpubs
+server: rpubs.com
+hostUrl: rpubs.com
+appId: https://api.rpubs.com/api/v1/document/1041861/3025ee86b1eb4e03b46b815e87948ca9
+bundleId: https://api.rpubs.com/api/v1/document/1041861/3025ee86b1eb4e03b46b815e87948ca9
+url: http://rpubs.com/eolia/1041861
+when: 1684163586.20738
+lastSyncTime: 1684163586.2074
