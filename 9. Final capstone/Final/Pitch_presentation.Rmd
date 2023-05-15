@@ -1,0 +1,44 @@
+---
+title: 'Final Project: Capstone'
+author: "Andrea Eoli"
+date: "15 May 2023"
+output: ioslides_presentation
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+## Instructions
+
+1. Write a shiny app with documentation.
+2. Deploy it on Rstudio's shiny server
+3. Share the app link
+4. Share the server.R and ui.R scripts on github
+
+
+**Course**: "Data Science Capstone"
+
+**Specialization**: "Data Science"
+
+## How to use the application
+
+The app is a word predictor. Simply start to write a short sentence and the app will predict which words are most likely to follow.
+
+[Click here to access the app](https://eolia.shinyapps.io/Week4_AE/)
+
+
+## Data sources
+
+The data comes from 2 sources:  
+1. *Ngrams* is a dataframe with words ('words') that follow an input string ('ngrams') and their frequency of appearance ('freq')
+2. *Contractions* contains the info to convert contracted words into single ones (e.g., "it's" to "it is")
+
+```{r summary}
+load(file="ngrams")
+subset <- which(stringr::str_count(ngrams$ngrams) > 8)
+head(ngrams[subset,])
+```
+
+## Code and GitHub
+The ui.R and Server.R scripts are available [in my github repository](https://github.com/aeoli/DataScience_JHU_Coursera/tree/master/8.%20Developing%20data%20products/Week4_AE)
